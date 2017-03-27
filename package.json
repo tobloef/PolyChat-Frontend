@@ -1,0 +1,19 @@
+{
+  "name": "polychat-frontend",
+  "version": "1.0.0",
+  "description": "PolyChat is a relatively simple chat application with multiple backends, each written in a different language. I made this to try out and compare a number of different programming languages. Currently the languages include JavaScript with Node.js, Elixir and Go. The end goal of the project is to be able to choose which language to use for a bigger project I'll be doing in the near future.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tobloef/PolyChat-Frontend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tobloef/PolyChat-Frontend/issues"
+  },
+  "homepage": "https://github.com/tobloef/PolyChat-Frontend#readme"
+}
