@@ -5,3 +5,12 @@ I'm already fairly familiar with Node.js and I'm mainly including it as a basis 
 
 ## PolyChat Frontend
 This repository contains the frontend for PolyChat. It's just a minimal web page with a text field for writing chat messages, a view of all the sent chat messages and a dropdown menu to change which backend to use.
+
+## The other repositories
+[PolyChat Frontend](https://github.com/tobloef/PolyChat-Frontend)
+
+[PolyChat Node.js Backend](https://github.com/tobloef/PolyChat-Node.js-Backend)
+
+[PolyChat Go Backend](https://github.com/tobloef/PolyChat-Go-Backend)
+
+[PolyChat Elixir Backend](https://github.com/tobloef/PolyChat-Elixir-Backend)
