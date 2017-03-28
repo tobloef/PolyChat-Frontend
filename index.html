@@ -1,0 +1,43 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+	<div class="wrapper">
+		<ul class="chat-log">
+				<li class="username">Tobias Løfgren</li>
+				<li class="message">This is a chat message.</li>
+				<li class="username">Alexande Kusk Quistgaard</li>
+				<li class="message">This is a chat message.</li>
+				<li class="message">This is a chat message.</li>
+				<li class="message">This is a chat message.</li>
+				<li class="username">Tobias Løfgren</li>
+				<li class="message">This is a really long chat message to test whether it properly works or not. It should probably break with a newline at some point, else something has gone wrong.</li>
+				<li class="username">Tobloef</li>
+				<li class="message">This is a chat message.</li>
+		</ul>
+		<textarea class="writing-box" placeholder="Type here..." autofocus></textarea>
+		<div class="utility-box">
+			<div class="online-count">
+				<span>People online: </span>
+				<span class="online-count-number">10</span>
+			</div>
+			<div class="backend-selector">
+				<span>Backend:</span>
+				<select>
+					<option value="node">Node.js</option>
+					<option value="go">Go</option>
+					<option value="elixir">Elixir</option>
+				</select>
+			</div>
+			<a href="https://github.com/tobloef/PolyChat-Frontend/">Learn more on GitHub</a>
+		</div>
+	</div>
+	<script src="scripts/main.js"></script>
+</body>
+</html>

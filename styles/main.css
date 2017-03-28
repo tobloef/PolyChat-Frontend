@@ -1,0 +1,86 @@
+body, html {
+	font-family: sans-serif;
+	overflow: hidden;
+	margin: 0;
+	height: 100%;
+}
+
+.wrapper {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.chat-log {
+	list-style: none;
+	padding: 10px;
+	margin: 0;
+	overflow-y: scroll;
+	background-color: #eee;
+	flex-grow: 1;
+}
+
+.username {
+	font-weight: bold;
+}
+
+.message + .username {
+	margin-top: 10px;
+}
+
+.message + .message {
+	margin-top: 5px;
+}
+
+.writing-box {
+	flex: 0 0 2.7em;
+	border-top: 1px solid black;
+	width: 100%;
+	border: 0;
+	outline: 0;
+	padding: 10px;
+	resize: none;
+	box-sizing: border-box;
+}
+
+.utility-box {
+	position: fixed;
+	right: 1em;
+	top: 1em;
+	background: rgba(0,0,0,0.7);
+	border: 3px solid rgba(0,0,0,0.5);
+	border-radius: 8px;
+	padding: 10px;
+	color: white;
+}
+
+.utility-box a {
+	color: white;
+}
+
+.utility-box > * {
+	display: block;
+	width: 100%;
+}
+
+.utility-box > * + *  {
+	margin-top: 10px;
+}
+
+.backend-selector {
+	display: flex;
+	flex-direction: row;
+}
+
+.backend-selector > select {
+	height: 25px;
+	padding: 0 2px;
+	flex-grow: 1;
+}
+
+.backend-selector > span {
+	margin: 0;
+	margin-right: 5px;
+	line-height: 25px;
+	vertical-align: middle;
+}
