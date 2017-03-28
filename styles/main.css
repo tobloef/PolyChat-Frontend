@@ -11,13 +11,19 @@ body, html {
 	flex-direction: column;
 }
 
+.chat-container {
+	flex-grow: 1;
+	overflow-y: scroll;
+	background-color: #eee;
+	position: relative;
+}
+
 .chat-log {
 	list-style: none;
 	padding: 10px;
 	margin: 0;
-	overflow-y: scroll;
-	background-color: #eee;
-	flex-grow: 1;
+	position: absolute;
+	bottom: 0;
 }
 
 .username {
@@ -33,10 +39,10 @@ body, html {
 }
 
 .writing-box {
-	flex: 0 0 2.7em;
-	border-top: 1px solid black;
+	flex: 0 0 37px;
 	width: 100%;
 	border: 0;
+	border-top: 1px solid black;
 	outline: 0;
 	padding: 10px;
 	resize: none;
