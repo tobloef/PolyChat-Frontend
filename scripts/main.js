@@ -4,13 +4,14 @@ const nicknameMaxLength = 32;
 
 const log = [];
 const urls = {
-    "node": "ws://tobloef.com/polychat/node",
-    "go": "ws://tobloef.com/polychat/go",
-    "elixir": "ws://tobloef.com/polychat/elixir"
+    "node": "ws://tobloef.com/polychat/node:80",
+    "go": "ws://tobloef.com/polychat/go:80",
+    "elixir": "ws://tobloef.com/polychat/elixir:80"
 }
 
 let nickname;
 let ws;
+let hasBeenConnected = false;
 
 $(function() {
 	$(".writing-box").on("input", autoResize);
@@ -57,6 +58,7 @@ function getLatestChatter() {
 	if (log.length > 0) {
 		return log[log.length - 1].nickname;
 	}
+	return null;
 }
 
 function autoResize() {
@@ -83,17 +85,25 @@ function connect() {
 		return;
 	}
 	url = urls[backend];
-	if (!url) {
+	try {
+		ws = new WebSocket(url);
+	} catch (exception) {
 		addStatusMessage("Couldn't connect to the server.");
-		return;
+		console.error(exception);
 	}
-	ws = new WebSocket(url);
 	ws.onopen = function(event) {
-		ws.send(JSON.stringify({type: "connected", data: nickname}));
+		ws.send(JSON.stringify({type: "connected", data: nickname}), function(error) {
+			if (!error) {
+				hasBeenConnected = true;
+			}
+		});
 	};
 	ws.onclose = function(event) {
-		addStatusMessage("Couldn't connect to the server. Trying to reconnect you...");
-		setOnlineCount("");
+		if (hasBeenConnected) {
+			addStatusMessage("Lost connection to server. Try refreshing the page.");
+		} else {
+			addStatusMessage("Couldn't connect to the server. Try refreshing the page.");
+		}
 	};
 	ws.onmessage = function(event) {
 		const data = JSON.parse(event.data);
