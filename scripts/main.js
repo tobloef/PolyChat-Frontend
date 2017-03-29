@@ -1,8 +1,9 @@
 const maxWritingBoxHeight = 150;
 const writingBoxDefaultHeight = 37;
+const nicknameMaxLength = 32;
 
 const log = [];
-let username;
+let nickname;
 
 $(function() {
 	$(".writing-box").on("input", autoResize);
@@ -10,7 +11,7 @@ $(function() {
 		if (event.key === "Enter" && !event.shiftKey) {
 			event.preventDefault();
 			if ($(this).val() !== "") {
-				submitMessage($(this).val(), username);
+				submitMessage($(this).val(), nickname);
 				$(this).val("");
 			}
 			$(this).trigger("input");
@@ -21,27 +22,27 @@ $(function() {
 		connect();
 	});
 
-	username = chooseUsername();
+	chooseNickname();
 	connect();
 });
 
-function addMessage(message, username) {
-	if (getLatestChatter() !== username) {
+function addMessage(message, nickname) {
+	if (getLatestChatter() !== nickname) {
 		$("<li />", {
-			"class": "username",
-			text: username
+			"class": "nickname",
+			text: nickname
 		}).appendTo(".chat-log");
 	}
 	$("<li />", {
 		"class": "message",
 		text: message
 	}).appendTo(".chat-log");
-	log.push({username, message});
+	log.push({nickname, message});
 }
 
 function getLatestChatter() {
 	if (log.length > 0) {
-		return log[log.length - 1].username;
+		return log[log.length - 1].nickname;
 	}
 }
 
@@ -83,16 +84,20 @@ function connectElixir() {
 	alert("Sorry, the backend you were trying to connect to hasn't been implemented yet.");
 }
 
-function submitMessage(message, username) {
-	if (message && username) {
-		addMessage(message, username);
+function submitMessage(message, nickname) {
+	if (message && nickname) {
+		addMessage(message, nickname);
 	}
 }
 
-function chooseUsername() {
-	const username = prompt("Please choose a username:");
-	if (username) {
-		return username;
+function chooseNickname() {
+	while (true) {
+		if (nickname == null || nickname == "") {
+			nickname = prompt("Please choose a nickname:");
+		} else if (nickname.length > nicknameMaxLength) {
+			nickname = prompt("Nickname cannot be above 32 characters, please choose a shorter one:");
+		} else {
+			return;
+		}
 	}
-	return chooseUsername();
 }

@@ -26,11 +26,11 @@ body, html {
 	bottom: 0;
 }
 
-.username {
+.nickname {
 	font-weight: bold;
 }
 
-.message + .username {
+.message + .nickname {
 	margin-top: 10px;
 }
 
