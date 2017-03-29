@@ -7,11 +7,11 @@ const urls = {
     "node": "ws://tobloef.com/polychat/node:80",
     "go": "ws://tobloef.com/polychat/go:80",
     "elixir": "ws://tobloef.com/polychat/elixir:80"
-}
+};
 
 let nickname;
 let ws;
-let hasBeenConnected = false;
+let ready = false;
 
 $(function() {
 	$(".writing-box").on("input", autoResize);
@@ -33,12 +33,15 @@ $(function() {
 		disconnect();
 		connect();
 	});
-	chooseNickname();
-	connect();
+	if (chooseNickname()) {
+		connect();
+	} else {
+		addStatusMessage("You cannot connect to the server without a username.");
+	}
 });
 
 function addMessage(message, nickname) {
-	if (getLatestChatter() !== nickname) {
+	if (shouldPrintNickname(log, nickname)) {
 		$("<li />", {
 			"class": "nickname",
 			text: nickname
@@ -54,11 +57,16 @@ function addMessage(message, nickname) {
 	});
 }
 
-function getLatestChatter() {
+function shouldPrintNickname(log, nickname) {
 	if (log.length > 0) {
-		return log[log.length - 1].nickname;
+		if (log[log.length - 1].nickname !== nickname) {
+			return true;
+		}
 	}
-	return null;
+	if ($(".chat-log li").last().hasClass("status")) {
+		return true;
+	}
+	return false;
 }
 
 function autoResize() {
@@ -92,14 +100,10 @@ function connect() {
 		console.error(exception);
 	}
 	ws.onopen = function(event) {
-		ws.send(JSON.stringify({type: "connected", data: nickname}), function(error) {
-			if (!error) {
-				hasBeenConnected = true;
-			}
-		});
+		ws.send(JSON.stringify({type: "connect", data: nickname}));
 	};
 	ws.onclose = function(event) {
-		if (hasBeenConnected) {
+		if (ready) {
 			addStatusMessage("Lost connection to server. Try refreshing the page.");
 		} else {
 			addStatusMessage("Couldn't connect to the server. The server may be down.");
@@ -120,20 +124,36 @@ function connect() {
 			case "disconnected":
 				addStatusMessage(`${data.data} left`);
 				break;
+			case "connectResponse":
+				console.log("connectResponse");
+				switch (data.data) {
+					case "nicknameTaken":
+						if (chooseNickname("Nickname already taken. Pick a different one:")) {
+							ws.send(JSON.stringify({type: "connect", data: nickname}));
+						} else {
+							addStatusMessage("You cannot connect to the server without a username.");
+						}
+						break;
+					case "ready":
+						ready = true;
+						$(".writing-box").prop("disabled", false);
+						break;
+				}
+				break;
 		}
 	};
 }
 
-function chooseNickname() {
-	while (true) {
-		if (nickname == null || nickname == "") {
-			nickname = prompt("Please choose a nickname:").replace(/\s\s+/g, " ");
-		} else if (nickname.length > nicknameMaxLength) {
-			nickname = prompt("Nickname cannot be above 32 characters, please choose a shorter one:").replace(/\s\s+/g, " ");
-		} else {
-			return;
-		}
+function chooseNickname(message) {
+	nickname = prompt(message || "Please choose a nickname:").replace(/\s\s+/g, " ");
+	if (nickname == null || nickname === "") {
+		chooseNickname();
+		return false;
+	} else if (nickname.length > nicknameMaxLength) {
+		chooseNickname("Nickname cannot be above 32 characters, please choose a shorter one:");
+		return false;
 	}
+	return true;
 }
 
 function sendMessage(message, nickname) {

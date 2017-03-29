@@ -13,7 +13,7 @@ body, html {
 
 .chat-container {
 	flex-grow: 1;
-	overflow-y: scroll;
+	overflow-y: auto;
 	background-color: #eee;
 	position: relative;
 }
