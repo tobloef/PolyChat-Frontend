@@ -4,9 +4,9 @@ const nicknameMaxLength = 32;
 
 const log = [];
 const urls = {
-    "node": "ws://tobloef.com/polychat/node:3001",
-    "go": "ws://tobloef.com/polychat/go:3001",
-    "elixir": "ws://tobloef.com/polychat/elixir:3001"
+    "node": "ws://tobloef.com/polychat/node:80",
+    "go": "ws://tobloef.com/polychat/go:80",
+    "elixir": "ws://tobloef.com/polychat/elixir:80"
 }
 
 let nickname;
