@@ -3,6 +3,12 @@ const writingBoxDefaultHeight = 37;
 const nicknameMaxLength = 32;
 
 const log = [];
+const urls = {
+    "node": "ws://45.76.86.129/polychat/node",
+    "go": "ws://45.76.86.129/polychat/go",
+    "elixir": "ws://45.76.86.129/polychat/elixir"
+}
+
 let nickname;
 let ws;
 
@@ -74,9 +80,14 @@ function connect() {
 	const backend = $(".backend-selector select").val();
 	if (backend == "go" || backend == "elixir") {
 		addStatusMessage("Sorry, the backend you were trying to connect to hasn't been implemented yet.");
+		return;
 	}
-	//ws = new WebSocket(`ws://localhost/${backend}:3000`);
-	ws = new WebSocket("ws://localhost:3000");
+	url = urls[backend];
+	if (!url) {
+		addStatusMessage("Couldn't connect to the server.");
+		return;
+	}
+	ws = new WebSocket(url);
 	ws.onopen = function(event) {
 		ws.send(JSON.stringify({type: "connected", data: nickname}));
 	};
