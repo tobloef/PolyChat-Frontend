@@ -4,9 +4,9 @@ const nicknameMaxLength = 32;
 
 const log = [];
 const urls = {
-    "node": "ws://tobloef.com/polychat/node:80",
-    "go": "ws://tobloef.com/polychat/go:80",
-    "elixir": "ws://tobloef.com/polychat/elixir:80"
+    "node": "ws://tobloef.com/polychat/node",
+    "go": "ws://tobloef.com/polychat/go",
+    "elixir": "ws://tobloef.com/polychat/elixir"
 }
 
 let nickname;
@@ -88,7 +88,7 @@ function connect() {
 	try {
 		ws = new WebSocket(url);
 	} catch (exception) {
-		addStatusMessage("Couldn't connect to the server.");
+		addStatusMessage("Couldn't connect to the server. The server may be down.");
 		console.error(exception);
 	}
 	ws.onopen = function(event) {
@@ -102,7 +102,7 @@ function connect() {
 		if (hasBeenConnected) {
 			addStatusMessage("Lost connection to server. Try refreshing the page.");
 		} else {
-			addStatusMessage("Couldn't connect to the server. Try refreshing the page.");
+			addStatusMessage("Couldn't connect to the server. The server may be down.");
 		}
 	};
 	ws.onmessage = function(event) {
