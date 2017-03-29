@@ -4,6 +4,7 @@ const nicknameMaxLength = 32;
 
 const log = [];
 let nickname;
+let ws;
 
 $(function() {
 	$(".writing-box").on("input", autoResize);
@@ -12,17 +13,19 @@ $(function() {
 			event.preventDefault();
 			const message = $.trim($(this).val());
 			if (message !== "") {
-				submitMessage(message, nickname);
+				if (message && nickname) {
+					addMessage(message, nickname);
+					sendMessage(message, nickname);
+				}
 				$(this).val("");
 			}
 			$(this).trigger("input");
 		}
 	});
-	$(".backend-selector").on("change", function() {
+	$(".backend-selector select").on("change", function() {
 		disconnect();
 		connect();
 	});
-
 	chooseNickname();
 	connect();
 });
@@ -38,7 +41,10 @@ function addMessage(message, nickname) {
 		"class": "message",
 		text: message
 	}).appendTo(".chat-log");
-	log.push({nickname, message});
+	log.push({
+		nickname,
+		message
+	});
 }
 
 function getLatestChatter() {
@@ -55,40 +61,46 @@ function autoResize() {
 }
 
 function disconnect() {
-	// Todo: Disconnect from all backends.
+	if (ws) {
+		ws.close();
+	}
 }
 
 function connect() {
-	switch ($(".backend-selector").val()) {
-	    default:
-	    case "node":
-	        connectNode();
-	        break;
-	    case "go":
-	        connectGo();
-	        break;
-	    case "elixir":
-	        connectElixir();
-	        break;
+	if (!WebSocket) {
+		addStatusMessage("Your browser doesn't support WebSockets and you won't be able to use the application. Please upgrade to a newer browser.");
+		return;
 	}
-}
-
-function connectNode() {
-	alert("Sorry, the backend you were trying to connect to hasn't been implemented yet.");
-}
-
-function connectGo() {
-	alert("Sorry, the backend you were trying to connect to hasn't been implemented yet.");
-}
-
-function connectElixir() {
-	alert("Sorry, the backend you were trying to connect to hasn't been implemented yet.");
-}
-
-function submitMessage(message, nickname) {
-	if (message && nickname) {
-		addMessage(message, nickname);
+	const backend = $(".backend-selector select").val();
+	if (backend == "go" || backend == "elixir") {
+		addStatusMessage("Sorry, the backend you were trying to connect to hasn't been implemented yet.");
 	}
+	//ws = new WebSocket(`ws://localhost/${backend}:3000`);
+	ws = new WebSocket("ws://localhost:3000");
+	ws.onopen = function(event) {
+		ws.send(JSON.stringify({type: "connected", data: nickname}));
+	};
+	ws.onclose = function(event) {
+		addStatusMessage("Couldn't connect to the server. Trying to reconnect you...");
+		setOnlineCount("");
+	};
+	ws.onmessage = function(event) {
+		const data = JSON.parse(event.data);
+		switch (data.type) {
+			case "message":
+				addMessage(data.data.message, data.data.nickname);
+				break;
+			case "onlineCount":
+				setOnlineCount(data.data);
+				break;
+			case "connected":
+				addStatusMessage(`${data.data} joined`);
+				break;
+			case "disconnected":
+				addStatusMessage(`${data.data} left`);
+				break;
+		}
+	};
 }
 
 function chooseNickname() {
@@ -101,4 +113,21 @@ function chooseNickname() {
 			return;
 		}
 	}
+}
+
+function sendMessage(message, nickname) {
+	if (ws) {
+		ws.send(JSON.stringify({type: "message", data: {message, nickname}}));
+	}
+}
+
+function setOnlineCount(onlineCount) {
+	$(".online-count-number").text(onlineCount);
+}
+
+function addStatusMessage(message) {
+	$("<li />", {
+		"class": "status",
+		text: message
+	}).appendTo(".chat-log");
 }

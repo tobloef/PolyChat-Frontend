@@ -31,7 +31,13 @@ body, html {
 	font-weight: bold;
 }
 
-.message + .nickname {
+.status {
+	margin-top: 10px;
+	font-style: italic;
+	color: grey;
+}
+
+li + .nickname {
 	margin-top: 10px;
 }
 
