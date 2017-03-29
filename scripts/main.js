@@ -125,7 +125,6 @@ function connect() {
 				addStatusMessage(`${data.data} left`);
 				break;
 			case "connectResponse":
-				console.log("connectResponse");
 				switch (data.data) {
 					case "nicknameTaken":
 						if (chooseNickname("Nickname already taken. Pick a different one:")) {
