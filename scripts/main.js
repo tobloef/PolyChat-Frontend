@@ -10,8 +10,9 @@ $(function() {
 	$(".writing-box").on("keypress", function(event) {
 		if (event.key === "Enter" && !event.shiftKey) {
 			event.preventDefault();
-			if ($(this).val() !== "") {
-				submitMessage($(this).val(), nickname);
+			const message = $.trim($(this).val());
+			if (message !== "") {
+				submitMessage(message, nickname);
 				$(this).val("");
 			}
 			$(this).trigger("input");
@@ -93,9 +94,9 @@ function submitMessage(message, nickname) {
 function chooseNickname() {
 	while (true) {
 		if (nickname == null || nickname == "") {
-			nickname = prompt("Please choose a nickname:");
+			nickname = prompt("Please choose a nickname:").replace(/\s\s+/g, " ");
 		} else if (nickname.length > nicknameMaxLength) {
-			nickname = prompt("Nickname cannot be above 32 characters, please choose a shorter one:");
+			nickname = prompt("Nickname cannot be above 32 characters, please choose a shorter one:").replace(/\s\s+/g, " ");
 		} else {
 			return;
 		}
