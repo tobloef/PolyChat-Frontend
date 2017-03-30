@@ -3,11 +3,6 @@ const writingBoxDefaultHeight = 37;
 const nicknameMaxLength = 32;
 
 const log = [];
-const urls = {
-    "node": "ws://tobloef.com/polychat/node:80",
-    "go": "ws://tobloef.com/polychat/go:80",
-    "elixir": "ws://tobloef.com/polychat/elixir:80"
-};
 
 let nickname;
 let ws;
@@ -15,20 +10,7 @@ let ready = false;
 
 $(function() {
 	$(".writing-box").on("input", autoResize);
-	$(".writing-box").on("keypress", function(event) {
-		if (event.key === "Enter" && !event.shiftKey) {
-			event.preventDefault();
-			const message = $.trim($(this).val());
-			if (message !== "") {
-				if (message && nickname) {
-					addMessage(message, nickname);
-					sendMessage(message, nickname);
-				}
-				$(this).val("");
-			}
-			$(this).trigger("input");
-		}
-	});
+	$(".writing-box").on("keypress", onKeypress);
 	$(".backend-selector select").on("change", function() {
 		disconnect();
 		connect();
@@ -40,6 +22,24 @@ $(function() {
 	}
 });
 
+// Handler method for the keypress event.
+function onKeypress(event) {
+	// When enter is pressed, send the message.
+	if (event.which === 13 && !event.shiftKey) {
+		event.preventDefault();
+		const message = $.trim($(this).val());
+		if (message !== "") {
+			if (message && nickname) {
+				addMessage(message, nickname);
+				sendMessage(message, nickname);
+			}
+			$(this).val("");
+		}
+		$(this).trigger("input");
+	}
+}
+
+// Add a message to the chat log with nickname if needed.
 function addMessage(message, nickname) {
 	if (shouldPrintNickname(log, nickname)) {
 		$("<li />", {
@@ -57,6 +57,8 @@ function addMessage(message, nickname) {
 	});
 }
 
+// Determine wheher the nickname of the sender should be added
+// above their message in the chat log.
 function shouldPrintNickname(log, nickname) {
 	if (log.length > 0) {
 		if (log[log.length - 1].nickname !== nickname) {
@@ -69,6 +71,7 @@ function shouldPrintNickname(log, nickname) {
 	return false;
 }
 
+// Automatically resize the text area for writing the message.
 function autoResize() {
 	this.style.flex = `0 0 ${writingBoxDefaultHeight}px`;
 	const newHeight = Math.min(this.scrollHeight, maxWritingBoxHeight);
@@ -76,12 +79,15 @@ function autoResize() {
 	this.scrollTop = this.scrollHeight;
 }
 
+// Disconnect the user from the chat.
 function disconnect() {
 	if (ws) {
 		ws.close();
 	}
 }
 
+// Try to connect to the WebSocket server of the specified backend.
+// Also set up event listeners for the WebSocket.
 function connect() {
 	if (!WebSocket) {
 		addStatusMessage("Your browser doesn't support WebSockets and you won't be able to use the application. Please upgrade to a newer browser.");
@@ -92,23 +98,28 @@ function connect() {
 		addStatusMessage("Sorry, the backend you were trying to connect to hasn't been implemented yet.");
 		return;
 	}
-	url = urls[backend];
+	const backendText = $(".backend-selector select option:selected").text();
+	addStatusMessage(`Connecting to the ${backendText} backend...`);
+	url = `ws://tobloef.com/polychat/${backend}:80`;
 	try {
 		ws = new WebSocket(url);
 	} catch (exception) {
 		addStatusMessage("Couldn't connect to the server. The server may be down.");
 		console.error(exception);
 	}
+	// When the connection has been opened.
 	ws.onopen = function(event) {
 		ws.send(JSON.stringify({type: "connect", data: nickname}));
 	};
+	// When the connection closes for any reason.
 	ws.onclose = function(event) {
 		if (ready) {
-			addStatusMessage("Lost connection to server. Try refreshing the page.");
+			addStatusMessage("Lost connection to server. Try choosing another backend or refreshing the page.");
 		} else {
-			addStatusMessage("Couldn't connect to the server. The server may be down.");
+			addStatusMessage("Couldn't connect to the server. The backend you tried to connect to may be down.");
 		}
 	};
+	// When the WebSocket client recieves a message from the server.
 	ws.onmessage = function(event) {
 		const data = JSON.parse(event.data);
 		switch (data.type) {
@@ -143,6 +154,7 @@ function connect() {
 	};
 }
 
+// Prompt the user to choose a nickname.
 function chooseNickname(message) {
 	nickname = prompt(message || "Please choose a nickname:").replace(/\s\s+/g, " ");
 	if (nickname == null || nickname === "") {
@@ -155,16 +167,19 @@ function chooseNickname(message) {
 	return true;
 }
 
+// Send a chat message to the server.
 function sendMessage(message, nickname) {
 	if (ws) {
 		ws.send(JSON.stringify({type: "message", data: {message, nickname}}));
 	}
 }
 
+// Set the "Online users" count to the specified number.
 function setOnlineCount(onlineCount) {
 	$(".online-count-number").text(onlineCount);
 }
 
+// Add a status message to the chat log.
 function addStatusMessage(message) {
 	$("<li />", {
 		"class": "status",
