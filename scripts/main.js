@@ -109,7 +109,12 @@ function connect() {
 	}
 	// When the connection has been opened.
 	ws.onopen = function(event) {
-		ws.send(JSON.stringify({type: "connect", data: nickname}));
+		ws.send(JSON.stringify({
+			type: "connect",
+			data: {
+				nickname
+			}
+		}));
 	};
 	// When the connection closes for any reason.
 	ws.onclose = function(event) {
@@ -118,37 +123,26 @@ function connect() {
 		} else {
 			addStatusMessage("Couldn't connect to the server. The backend you tried to connect to may be down.");
 		}
+		setOnlineCount("");
 	};
 	// When the WebSocket client recieves a message from the server.
-	ws.onmessage = function(event) {
-		const data = JSON.parse(event.data);
-		switch (data.type) {
+	ws.onmessage = function(message) {
+		const event = JSON.parse(message.data);
+		switch (event.type) {
 			case "message":
-				addMessage(data.data.message, data.data.nickname);
+				addMessage(event.data.message, event.data.nickname);
 				break;
 			case "onlineCount":
-				setOnlineCount(data.data);
+				setOnlineCount(event.data);
 				break;
 			case "connected":
-				addStatusMessage(`${data.data} joined`);
+				addStatusMessage(`${event.data.nickname} joined`);
 				break;
 			case "disconnected":
-				addStatusMessage(`${data.data} left`);
+				addStatusMessage(`${event.data.nickname} left`);
 				break;
 			case "connectResponse":
-				switch (data.data) {
-					case "nicknameTaken":
-						if (chooseNickname("Nickname already taken. Pick a different one:")) {
-							ws.send(JSON.stringify({type: "connect", data: nickname}));
-						} else {
-							addStatusMessage("You cannot connect to the server without a username.");
-						}
-						break;
-					case "ready":
-						ready = true;
-						$(".writing-box").prop("disabled", false);
-						break;
-				}
+				handleConnectResponse(event.data);
 				break;
 		}
 	};
@@ -167,10 +161,37 @@ function chooseNickname(message) {
 	return true;
 }
 
+function handleConnectResponse(response) {
+	switch (response) {
+    	case "nicknameTaken":
+        	if (chooseNickname("Nickname already taken. Pick a different one:")) {
+            	ws.send(JSON.stringify({
+                	type: "connect",
+                    data: {
+                    	nickname
+                  	}
+				}));
+			} else {
+            	addStatusMessage("You cannot connect to the server without a username.");
+            }
+            break;
+		case "ready":
+        	ready = true;
+            $(".writing-box").prop("disabled", false);
+            break;
+	}
+}
+
 // Send a chat message to the server.
 function sendMessage(message, nickname) {
 	if (ws) {
-		ws.send(JSON.stringify({type: "message", data: {message, nickname}}));
+		ws.send(JSON.stringify({
+			type: "message",
+			data: {
+				message,
+				nickname
+			}
+		}));
 	}
 }
 
