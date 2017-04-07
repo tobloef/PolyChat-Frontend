@@ -18,12 +18,14 @@ body, html {
 	position: relative;
 }
 
+.chat-scroller {
+
+}
+
 .chat-log {
 	list-style: none;
 	padding: 10px;
 	margin: 0;
-	position: absolute;
-	bottom: 0;
 	white-space: pre;
 }
 

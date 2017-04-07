@@ -2,10 +2,10 @@ const maxWritingBoxHeight = 150;
 const writingBoxDefaultHeight = 37;
 const nicknameMaxLength = 32;
 
-let lastSender = null;
 let nickname;
 let ws;
 let ready = false;
+let lastSender = null;
 
 $(function() {
 	$(".writing-box").on("input", autoResize);
@@ -41,6 +41,9 @@ function onKeypress(event) {
 
 // Add a message to the chat log with nickname if needed.
 function addMessage(message, nickname) {
+	const $chatLog = $(".chat-log");
+	const $chatContainer = $(".chat-container");
+	const isScrolledToBottom = $chatContainer[0].scrollHeight - $chatContainer.height() <= $chatContainer.scrollTop() + 1;
 	if (shouldPrintNickname(nickname)) {
 		$("<li />", {
 			"class": "nickname",
@@ -52,6 +55,9 @@ function addMessage(message, nickname) {
 		text: message
 	}).appendTo(".chat-log");
 	lastSender = nickname;
+	if (isScrolledToBottom) {
+		$chatContainer.scrollTop($chatContainer.prop("scrollHeight"));
+    }
 }
 
 // Determine wheher the nickname of the sender should be added
@@ -139,10 +145,9 @@ function connect() {
 
 // Prompt the user to choose a nickname.
 function chooseNickname(message) {
-	nickname = prompt(message || "Please choose a nickname:").replace(/\s\s+/g, " ");
+	nickname = (prompt(message || "Please choose a nickname:") || "" ).replace(/\s\s+/g, " ");
 	if (nickname == null || nickname === "") {
-		chooseNickname();
-		return false;
+		return chooseNickname();
 	} else if (nickname.length > nicknameMaxLength) {
 		chooseNickname("Nickname cannot be above 32 characters, please choose a shorter one:");
 		return false;
@@ -196,11 +201,17 @@ function setOnlineCount(onlineCount) {
 
 // Add a status message to the chat log.
 function addStatusMessage(message) {
+	const $chatLog = $(".chat-log");
+    const $chatContainer = $(".chat-container");
+    const isScrolledToBottom = $chatContainer[0].scrollHeight - $chatContainer.he$
 	$("<li />", {
-		"class": "status",
-		text: message
-	}).appendTo(".chat-log");
-	lastSender = null;
+        "class": "status",
+        text: message
+    }).appendTo(".chat-log");
+    lastSender = null;
+    if (isScrolledToBottom) {
+        $chatContainer.scrollTop($chatContainer.prop("scrollHeight"));
+    }
 }
 
 // Get previous chat messages from the server and add them to the log.
