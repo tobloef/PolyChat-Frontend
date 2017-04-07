@@ -2,8 +2,7 @@ const maxWritingBoxHeight = 150;
 const writingBoxDefaultHeight = 37;
 const nicknameMaxLength = 32;
 
-const log = [];
-
+let lastSender = null;
 let nickname;
 let ws;
 let ready = false;
@@ -42,7 +41,7 @@ function onKeypress(event) {
 
 // Add a message to the chat log with nickname if needed.
 function addMessage(message, nickname) {
-	if (shouldPrintNickname(log, nickname)) {
+	if (shouldPrintNickname(nickname)) {
 		$("<li />", {
 			"class": "nickname",
 			text: nickname
@@ -52,24 +51,13 @@ function addMessage(message, nickname) {
 		"class": "message",
 		text: message
 	}).appendTo(".chat-log");
-	log.push({
-		nickname,
-		message
-	});
+	lastSender = nickname;
 }
 
 // Determine wheher the nickname of the sender should be added
 // above their message in the chat log.
-function shouldPrintNickname(log, nickname) {
-	if (log.length > 0) {
-		if (log[log.length - 1].nickname !== nickname) {
-			return true;
-		}
-	}
-	if ($(".chat-log li").last().hasClass("status")) {
-		return true;
-	}
-	return false;
+function shouldPrintNickname(nickname) {
+	return lastSender == null || lastSender != nickname;
 }
 
 // Automatically resize the text area for writing the message.
@@ -212,6 +200,7 @@ function addStatusMessage(message) {
 		"class": "status",
 		text: message
 	}).appendTo(".chat-log");
+	lastSender = null;
 }
 
 // Get previous chat messages from the server and add them to the log.
