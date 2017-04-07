@@ -15,6 +15,7 @@ $(function() {
 		disconnect();
 		connect();
 	});
+	getMessages();
 	if (chooseNickname()) {
 		connect();
 	} else {
@@ -100,7 +101,7 @@ function connect() {
 	}
 	const backendText = $(".backend-selector select option:selected").text();
 	addStatusMessage(`Connecting to the ${backendText} backend...`);
-	url = `ws://tobloef.com/polychat/${backend}:80`;
+	url = `ws://tobloef.com/polychat/${backend}/:80`;
 	try {
 		ws = new WebSocket(url);
 	} catch (exception) {
@@ -161,6 +162,7 @@ function chooseNickname(message) {
 	return true;
 }
 
+// Handle the response from the server specifiing if the user got connected.
 function handleConnectResponse(response) {
 	switch (response) {
     	case "nicknameTaken":
@@ -206,4 +208,17 @@ function addStatusMessage(message) {
 		"class": "status",
 		text: message
 	}).appendTo(".chat-log");
+}
+
+// Get previous chat messages from the server and add them to the log.
+function getMessages() {
+	const backend = $(".backend-selector select").val();
+	$.get(`http://tobloef.com/polychat/${backend}/api/messages`, function(data) {
+		if (!data && data.length > 0) {
+			return;
+		}
+		for (let i = 0; i < data.length; i++) {
+			addMessage(data[i].message, data[i].username);
+		}
+	});
 }

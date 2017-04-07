@@ -54,6 +54,7 @@ li + .nickname {
 	padding: 10px;
 	resize: none;
 	box-sizing: border-box;
+	font-family: sans-serif;
 }
 
 .utility-box {
