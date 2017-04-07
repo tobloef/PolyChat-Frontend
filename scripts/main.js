@@ -179,8 +179,12 @@ function handleConnectResponse(response) {
             break;
 		case "ready":
         	ready = true;
+			addStatusMessage("Successfully connected to the server. You can now begin chatting.");
             $(".writing-box").prop("disabled", false);
             break;
+		case "error":
+			addStatusMessage("Sorry, something has gone wrong. Try again later.");
+			break;
 	}
 }
 
@@ -218,7 +222,7 @@ function getMessages() {
 			return;
 		}
 		for (let i = 0; i < data.length; i++) {
-			addMessage(data[i].message, data[i].username);
+			addMessage(data[i].message, data[i].nickname);
 		}
 	});
 }
