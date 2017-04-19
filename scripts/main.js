@@ -6,7 +6,7 @@ const ports = {
 	go: "3001",
 	elixir: "3002"
 };
-const debug = true;
+const debug = false;
 
 let nickname;
 let ws;
