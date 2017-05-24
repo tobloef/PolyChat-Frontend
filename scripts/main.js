@@ -239,7 +239,7 @@ function getMessages() {
 		if (!data && data.length > 0) {
 			return;
 		}
-		for (let i = 0; i < data.length; i++) {
+		for (let i = data.length - 1; i >= 0; i--) {
 			addMessage(data[i].content, data[i].nickname);
 		}
 	});
